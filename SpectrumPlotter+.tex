@@ -1,0 +1,326 @@
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{5}{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{} \PYZhy{}*\PYZhy{} coding: utf\PYZhy{}8 \PYZhy{}*\PYZhy{}}
+\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+\PY{l+s+sd}{Created on Fri Jul 14 11:24:53 2023}
+\PY{l+s+sd}{@author: jordan.walsh}
+
+\PY{l+s+sd}{\PYZdq{}\PYZdq{}\PYZdq{}}
+
+\PY{k+kn}{from} \PY{n+nn}{glob} \PY{k+kn}{import} \PY{n}{glob}
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt} 
+\PY{k+kn}{import} \PY{n+nn}{os}
+\PY{k+kn}{from} \PY{n+nn}{pylab} \PY{k+kn}{import} \PY{o}{*}
+\PY{k+kn}{import} \PY{n+nn}{sys}
+
+\PY{n}{index} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{peaks} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+\PY{n}{data} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+\PY{n}{h} \PY{o}{=} \PY{l+m+mf}{6.62607015e\PYZhy{}34} \PY{c+c1}{\PYZsh{}planck}
+\PY{n}{c} \PY{o}{=} \PY{l+m+mf}{2.99792458e8} \PY{c+c1}{\PYZsh{}speed of light}
+\PY{n}{e} \PY{o}{=} \PY{l+m+mf}{1.60217663e\PYZhy{}19} \PY{c+c1}{\PYZsh{}electron}
+\PY{n}{k} \PY{o}{=} \PY{l+m+mf}{1.380649e\PYZhy{}23} \PY{c+c1}{\PYZsh{}boltzmann}
+\PY{n}{J\PYZus{}eV} \PY{o}{=} \PY{l+m+mi}{1}\PY{o}{/}\PY{p}{(}\PY{l+m+mf}{6.242e18}\PY{p}{)} \PY{c+c1}{\PYZsh{}Joules / eV}
+\PY{n}{i} \PY{o}{=} \PY{l+m+mi}{0}
+
+\PY{c+c1}{\PYZsh{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{} PLOT CONTROLS \PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZsh{}}
+
+\PY{n}{path} \PY{o}{=}\PY{l+s+sa}{r}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Z:}\PY{l+s+s2}{\PYZbs{}}\PY{l+s+s2}{Tyndall}\PY{l+s+s2}{\PYZbs{}}\PY{l+s+s2}{LED measurements 210723 (MS)}\PY{l+s+s2}{\PYZbs{}}\PY{l+s+s2}{green}\PY{l+s+s2}{\PYZdq{}}
+\PY{n}{PLOT\PYZus{}LIMIT} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{450}\PY{p}{,} \PY{l+m+mi}{600}\PY{p}{]} \PY{c+c1}{\PYZsh{} wavelength limits in nm}
+\PY{n}{Y\PYZus{}LIMIT} \PY{o}{=} \PY{p}{[}\PY{l+m+mf}{1e\PYZhy{}3}\PY{p}{,} \PY{l+m+mi}{2}\PY{p}{]} \PY{c+c1}{\PYZsh{} enforced only for log plots [lower, upper] \PYZhy{} leave blank for auto}
+
+\PY{n}{INCLUDE\PYZus{}ENERGY\PYZus{}SCALE} \PY{o}{=} \PY{k+kc}{True} \PY{c+c1}{\PYZsh{} Wavelegnth \PYZam{} energy plot \PYZhy{} energy is indication only, intensity not accounted for}
+\PY{n}{PLOT\PYZus{}INDIVIDUAL\PYZus{}SPECTRUMS} \PY{o}{=} \PY{k+kc}{False} \PY{c+c1}{\PYZsh{} Plot all files individually}
+\PY{n}{CREATE\PYZus{}COMPILED\PYZus{}PLOT} \PY{o}{=} \PY{k+kc}{True} \PY{c+c1}{\PYZsh{} Plot all spectrums in one}
+
+\PY{n}{ENERGY\PYZus{}ONLY} \PY{o}{=} \PY{k+kc}{True} \PY{c+c1}{\PYZsh{} Energy (eV) only mode || overrides INCLUDE\PYZus{}ENERGY\PYZus{}SCALE if enabled and rescales to reflect true intensity of energy}
+\PY{n}{ALL\PYZus{}PLOTS\PYZus{}MAX\PYZus{}1} \PY{o}{=} \PY{k+kc}{False} \PY{c+c1}{\PYZsh{} Plots with all spectrums will be normalised to have the same maximum (1)}
+
+\PY{n}{LOG\PYZus{}PLOT\PYZus{}FITTING} \PY{o}{=} \PY{k+kc}{True} \PY{c+c1}{\PYZsh{} [Carrier Temp] Return information for boltzmann stats from specified FIT\PYZus{}RANGE [Least Squares fit]}
+\PY{n}{FIT\PYZus{}RANGE} \PY{o}{=} \PY{p}{[}\PY{l+m+mi}{480}\PY{p}{,} \PY{l+m+mi}{500}\PY{p}{]} \PY{c+c1}{\PYZsh{} wavelength in nm || These options allow you to find carrier temperature for ENERGY\PYZus{}ONLY plots}
+
+\PY{c+c1}{\PYZsh{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZsh{}}
+
+\PY{c+c1}{\PYZsh{} WARNING: TICKS ON BOTTOM AND TOP MUST BE ALLIGNED FOR ENERGY SCALE TO BE DISPLAYED CORRECTLY}
+
+\PY{c+c1}{\PYZsh{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZsh{}}
+
+\PY{k}{def} \PY{n+nf}{preventDivisionByZero}\PY{p}{(}\PY{n}{some\PYZus{}array}\PY{p}{)}\PY{p}{:}
+    \PY{n}{corrected\PYZus{}array} \PY{o}{=} \PY{n}{some\PYZus{}array}\PY{o}{.}\PY{n}{copy}\PY{p}{(}\PY{p}{)}
+    \PY{k}{for} \PY{n}{i}\PY{p}{,} \PY{n}{entry} \PY{o+ow}{in} \PY{n+nb}{enumerate}\PY{p}{(}\PY{n}{some\PYZus{}array}\PY{p}{)}\PY{p}{:}
+        \PY{c+c1}{\PYZsh{} If element is zero, set to some small value}
+        \PY{k}{if} \PY{n+nb}{abs}\PY{p}{(}\PY{n}{entry}\PY{p}{)} \PY{o}{\PYZlt{}} \PY{n}{sys}\PY{o}{.}\PY{n}{float\PYZus{}info}\PY{o}{.}\PY{n}{epsilon}\PY{p}{:}
+            \PY{n}{corrected\PYZus{}array}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{=} \PY{n}{sys}\PY{o}{.}\PY{n}{float\PYZus{}info}\PY{o}{.}\PY{n}{epsilon}
+    \PY{k}{return} \PY{n}{corrected\PYZus{}array}
+
+\PY{c+c1}{\PYZsh{} Converting wavelength (nm) to energy (eV)}
+\PY{k}{def} \PY{n+nf}{WLtoE}\PY{p}{(}\PY{n}{wl}\PY{p}{,} \PY{n}{label}\PY{p}{)}\PY{p}{:}
+    \PY{k}{if} \PY{n+nb}{str}\PY{p}{(}\PY{n+nb}{type}\PY{p}{(}\PY{n}{wl}\PY{p}{)}\PY{p}{)} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZlt{}class }\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{list}\PY{l+s+s2}{\PYZsq{}}\PY{l+s+s2}{\PYZgt{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:} \PY{c+c1}{\PYZsh{}check for single value or list of values}
+        \PY{c+c1}{\PYZsh{} Prevent division by zero error}
+        \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{wl}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+            \PY{n}{wl}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{=} \PY{n+nb}{float}\PY{p}{(}\PY{n}{wl}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}
+        \PY{n}{wl} \PY{o}{=} \PY{n}{preventDivisionByZero}\PY{p}{(}\PY{n}{wl}\PY{p}{)}
+        \PY{n}{wl} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{wl}\PY{p}{)}
+        
+    \PY{n}{E\PYZus{}eV} \PY{o}{=} \PY{l+m+mi}{1243} \PY{o}{/} \PY{n}{wl} \PY{c+c1}{\PYZsh{}h*c=1243}
+    \PY{k}{if} \PY{n}{label} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{label}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:} \PY{c+c1}{\PYZsh{}what is the purpose of conversion (i.e for scale labels or important data)}
+        \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{E\PYZus{}eV}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+            \PY{n}{E\PYZus{}eV}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{=} \PY{n+nb}{float}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+si}{\PYZob{}:.2f\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{E\PYZus{}eV}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+    \PY{k}{return} \PY{n}{E\PYZus{}eV}
+
+\PY{k}{def} \PY{n+nf}{add\PYZus{}energy\PYZus{}scale}\PY{p}{(}\PY{n}{plt}\PY{p}{)}\PY{p}{:} \PY{c+c1}{\PYZsh{}converts photon wavelength to energy, adds scale on top \PYZhy{} does not account for reltive intensity change}
+    \PY{n}{ax} \PY{o}{=} \PY{n}{plt}\PY{o}{.}\PY{n}{gca}\PY{p}{(}\PY{p}{)}
+    \PY{n}{labels} \PY{o}{=} \PY{n}{ax}\PY{o}{.}\PY{n}{get\PYZus{}xticks}\PY{p}{(}\PY{p}{)}
+    \PY{n}{ax2} \PY{o}{=} \PY{n}{ax}\PY{o}{.}\PY{n}{twiny}\PY{p}{(}\PY{p}{)}
+    \PY{n}{ax2}\PY{o}{.}\PY{n}{set\PYZus{}xlim}\PY{p}{(}\PY{n}{PLOT\PYZus{}LIMIT}\PY{p}{)}
+    \PY{n}{ax2}\PY{o}{.}\PY{n}{set\PYZus{}xticks}\PY{p}{(}\PY{n}{labels}\PY{p}{,} \PY{n}{WLtoE}\PY{p}{(}\PY{n}{labels}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{label}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)} \PY{c+c1}{\PYZsh{}locations, corresponding labels}
+    \PY{n}{ax2}\PY{o}{.}\PY{n}{set\PYZus{}xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Energy (eV)}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{8}\PY{p}{)}
+
+\PY{k}{def} \PY{n+nf}{convert\PYZus{}wl\PYZus{}intensity\PYZus{}to\PYZus{}energy\PYZus{}intensity}\PY{p}{(}\PY{n}{y}\PY{p}{,} \PY{n}{x}\PY{p}{)}\PY{p}{:} \PY{c+c1}{\PYZsh{}x must be wl in nm}
+    \PY{n}{i} \PY{o}{=} \PY{l+m+mi}{0}
+    \PY{k}{try}\PY{p}{:} \PY{c+c1}{\PYZsh{}if fails its because index is out of range (y isnt an array/list)}
+        \PY{n}{y} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{y}\PY{p}{)}
+        \PY{n}{x} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+        \PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{y}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+            \PY{n}{y}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{=} \PY{n}{y}\PY{p}{[}\PY{n}{i}\PY{p}{]} \PY{o}{*} \PY{p}{(}\PY{n}{x}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{o}{*}\PY{l+m+mf}{1e\PYZhy{}9}\PY{p}{)}\PY{o}{\PYZca{}}\PY{l+m+mi}{2} \PY{o}{/} \PY{p}{(}\PY{n}{h}\PY{o}{*}\PY{n}{c}\PY{p}{)}
+    \PY{k}{except} \PY{n+ne}{Exception} \PY{k}{as} \PY{n}{err}\PY{p}{:} \PY{c+c1}{\PYZsh{}I am aware that this is the most lazy way possible to do this}
+        \PY{c+c1}{\PYZsh{}print(\PYZdq{}conversion not array [\PYZob{}\PYZcb{}]\PYZdq{}.format(err))}
+        \PY{n}{y} \PY{o}{=} \PY{n}{y} \PY{o}{*} \PY{p}{(}\PY{n}{x}\PY{o}{*}\PY{l+m+mf}{1e\PYZhy{}9}\PY{p}{)}\PY{o}{*}\PY{o}{*}\PY{l+m+mi}{2} \PY{o}{/} \PY{p}{(}\PY{n}{h}\PY{o}{*}\PY{n}{c}\PY{p}{)}
+    \PY{k}{return} \PY{n}{y}
+
+\PY{k}{def} \PY{n+nf}{plot\PYZus{}graph}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{,} \PY{n}{top\PYZus{}energy\PYZus{}scale}\PY{p}{,} \PY{n}{energy\PYZus{}scale\PYZus{}only}\PY{p}{)}\PY{p}{:} \PY{c+c1}{\PYZsh{}create a single plot}
+    \PY{n}{labels} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{p}{)}
+    \PY{k}{if} \PY{n}{energy\PYZus{}scale\PYZus{}only} \PY{o}{==} \PY{k+kc}{True}\PY{p}{:}
+        \PY{n}{y} \PY{o}{=} \PY{n}{convert\PYZus{}wl\PYZus{}intensity\PYZus{}to\PYZus{}energy\PYZus{}intensity}\PY{p}{(}\PY{n}{y}\PY{p}{,} \PY{n}{x}\PY{p}{)}
+        \PY{n}{x} \PY{o}{=} \PY{n}{WLtoE}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{data}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{xlim}\PY{p}{(}\PY{n}{WLtoE}\PY{p}{(}\PY{n}{PLOT\PYZus{}LIMIT}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{data}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
+    \PY{k}{else}\PY{p}{:}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{xlim}\PY{p}{(}\PY{n}{PLOT\PYZus{}LIMIT}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{,} \PY{n}{linewidth} \PY{o}{=} \PY{l+m+mi}{1}\PY{p}{,} \PY{n}{color} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsh{}0c00b4ff}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{title}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Wavelength (nm)}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{8}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Intensity (au)}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}  \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{8}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{xticks}\PY{p}{(}\PY{n}{fontsize} \PY{o}{=} \PY{l+m+mi}{7}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{yticks}\PY{p}{(}\PY{n}{fontsize} \PY{o}{=} \PY{l+m+mi}{7}\PY{p}{)}
+    
+    \PY{n}{matplotlib}\PY{o}{.}\PY{n}{pyplot}\PY{o}{.}\PY{n}{figtext}\PY{p}{(}\PY{l+m+mf}{0.6}\PY{p}{,}\PY{l+m+mf}{0.8}\PY{p}{,} \PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Max = }\PY{l+s+si}{\PYZob{}}\PY{n}{maximum}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{nm}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{fontsize} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{medium}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{k+kc}{True}\PY{p}{,} \PY{n}{alpha}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{p}{)}
+    \PY{n}{labels} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{labels}\PY{p}{)}
+    \PY{k}{if} \PY{n}{top\PYZus{}energy\PYZus{}scale} \PY{o}{==} \PY{k+kc}{True} \PY{o+ow}{and} \PY{n}{energy\PYZus{}scale\PYZus{}only} \PY{o}{==} \PY{k+kc}{False}\PY{p}{:}
+        \PY{n}{add\PYZus{}energy\PYZus{}scale}\PY{p}{(}\PY{n}{plt}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+si}{\PYZob{}}\PY{n}{file}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s1}{\PYZus{}figure.png}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{dpi} \PY{o}{=} \PY{l+m+mi}{1000}\PY{p}{,} \PY{n}{bbox\PYZus{}inches}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{tight}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}
+    
+\PY{k}{def} \PY{n+nf}{return\PYZus{}boltzmann}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{)}\PY{p}{:} \PY{c+c1}{\PYZsh{}extract exponential features between bounds elected}
+    \PY{n}{x} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{x}\PY{p}{)}
+    \PY{n}{y} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{y}\PY{p}{)}
+    
+    \PY{k}{try}\PY{p}{:}
+        \PY{k}{if} \PY{n}{ENERGY\PYZus{}ONLY} \PY{o}{==} \PY{k+kc}{True}\PY{p}{:}
+            \PY{n}{E\PYZus{}FIT} \PY{o}{=} \PY{n}{WLtoE}\PY{p}{(}\PY{n}{FIT\PYZus{}RANGE}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{data}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+            \PY{n}{indices} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{where}\PY{p}{(}\PY{p}{(}\PY{n}{x} \PY{o}{\PYZgt{}}\PY{o}{=} \PY{n+nb}{min}\PY{p}{(}\PY{n}{E\PYZus{}FIT}\PY{p}{)}\PY{p}{)} \PY{o}{\PYZam{}} \PY{p}{(}\PY{n}{x} \PY{o}{\PYZlt{}}\PY{o}{=} \PY{n+nb}{max}\PY{p}{(}\PY{n}{E\PYZus{}FIT}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+        \PY{k}{else}\PY{p}{:}
+            \PY{n}{indices} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{where}\PY{p}{(}\PY{p}{(}\PY{n}{x} \PY{o}{\PYZgt{}}\PY{o}{=} \PY{n+nb}{min}\PY{p}{(}\PY{n}{FIT\PYZus{}RANGE}\PY{p}{)}\PY{p}{)} \PY{o}{\PYZam{}} \PY{p}{(}\PY{n}{x} \PY{o}{\PYZlt{}}\PY{o}{=} \PY{n+nb}{max}\PY{p}{(}\PY{n}{FIT\PYZus{}RANGE}\PY{p}{)}\PY{p}{)}\PY{p}{)} \PY{c+c1}{\PYZsh{}extrapolate range for fitting}
+        \PY{k}{if} \PY{n}{indices}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{o}{.}\PY{n}{size} \PY{o}{\PYZlt{}} \PY{l+m+mi}{1}\PY{p}{:}
+            \PY{k}{raise} \PY{n+ne}{Exception}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Failed to find indices in range provided}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+    \PY{k}{except} \PY{n+ne}{Exception} \PY{k}{as} \PY{n}{err}\PY{p}{:}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ERROR [}\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s2}{]}\PY{l+s+s2}{\PYZdq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{err}\PY{p}{)}\PY{p}{)}
+    
+    \PY{n}{x\PYZus{}fit} \PY{o}{=} \PY{n}{x}\PY{p}{[}\PY{n}{indices}\PY{p}{]}
+    \PY{n}{y\PYZus{}fit} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{log}\PY{p}{(}\PY{n}{y}\PY{p}{[}\PY{n}{indices}\PY{p}{]}\PY{p}{)}
+    \PY{n}{deg} \PY{o}{=} \PY{l+m+mi}{1}    
+    \PY{n}{p}\PY{p}{,} \PY{n}{cov} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{polyfit}\PY{p}{(}\PY{n}{x\PYZus{}fit}\PY{p}{,} \PY{n}{y\PYZus{}fit}\PY{p}{,} \PY{n}{deg}\PY{p}{,} \PY{n}{full}\PY{o}{=}\PY{k+kc}{False}\PY{p}{,} \PY{n}{cov}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}    
+    \PY{n}{a} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{n}{p}\PY{p}{[}\PY{n}{deg}\PY{p}{]}\PY{p}{)}  
+    \PY{n}{b} \PY{o}{=} \PY{n}{p}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+    \PY{n}{poly\PYZus{}error} \PY{o}{=} \PY{n}{sqrt}\PY{p}{(}\PY{n}{diag}\PY{p}{(}\PY{n}{cov}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{n}{p}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{n}{cov}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{n}{poly\PYZus{}error}\PY{p}{)}
+    
+    \PY{n}{x\PYZus{}fitted} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{linspace}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{min}\PY{p}{(}\PY{n}{x\PYZus{}fit}\PY{p}{)}\PY{p}{,} \PY{n}{np}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{n}{x\PYZus{}fit}\PY{p}{)}\PY{p}{,} \PY{l+m+mi}{100}\PY{p}{)}
+    \PY{n}{y\PYZus{}fitted} \PY{o}{=} \PY{n}{a}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{n}{b}\PY{o}{*}\PY{n}{x\PYZus{}fitted}\PY{p}{)}
+    
+    \PY{k}{return} \PY{n}{x\PYZus{}fitted}\PY{p}{,} \PY{n}{y\PYZus{}fitted}\PY{p}{,} \PY{n}{b}\PY{p}{,} \PY{n}{poly\PYZus{}error}
+
+\PY{k}{def} \PY{n+nf}{plot\PYZus{}all}\PY{p}{(}\PY{n}{All\PYZus{}files}\PY{p}{,} \PY{n}{plot\PYZus{}type}\PY{p}{,} \PY{n}{energy\PYZus{}scale}\PY{p}{,} \PY{n}{legend}\PY{p}{,} \PY{n}{y\PYZus{}all}\PY{p}{)}\PY{p}{:} \PY{c+c1}{\PYZsh{}create a compiled plot }
+    \PY{k}{for} \PY{n}{file} \PY{o+ow}{in} \PY{n}{All\PYZus{}files}\PY{p}{:}                               
+          \PY{c+c1}{\PYZsh{} Create the filepath of particular file}
+          \PY{n}{file\PYZus{}path} \PY{o}{=}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+si}{\PYZob{}}\PY{n}{path}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{/}\PY{l+s+si}{\PYZob{}}\PY{n}{file}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}
+          \PY{c+c1}{\PYZsh{}plt.figure()}
+          \PY{k}{with} \PY{n+nb}{open}\PY{p}{(}\PY{n}{file\PYZus{}path}\PY{p}{)} \PY{k}{as} \PY{n}{f}\PY{p}{:}
+              \PY{n}{lines} \PY{o}{=} \PY{n}{f}\PY{o}{.}\PY{n}{readlines}\PY{p}{(}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{14}\PY{p}{:}\PY{p}{]}
+              \PY{n}{x} \PY{o}{=} \PY{p}{[}\PY{n+nb}{float}\PY{p}{(}\PY{n}{line}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)} \PY{k}{for} \PY{n}{line} \PY{o+ow}{in} \PY{n}{lines}\PY{p}{]}
+              \PY{n}{y} \PY{o}{=} \PY{p}{[}\PY{n+nb}{float}\PY{p}{(}\PY{n}{line}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)} \PY{k}{for} \PY{n}{line} \PY{o+ow}{in} \PY{n}{lines}\PY{p}{]}
+              \PY{n}{y\PYZus{}norm} \PY{o}{=} \PY{n}{y}
+              \PY{k}{if} \PY{n}{ENERGY\PYZus{}ONLY} \PY{o}{==} \PY{k+kc}{True}\PY{p}{:}
+                  \PY{n}{y\PYZus{}norm} \PY{o}{=} \PY{n}{convert\PYZus{}wl\PYZus{}intensity\PYZus{}to\PYZus{}energy\PYZus{}intensity}\PY{p}{(}\PY{n}{y\PYZus{}norm}\PY{p}{,} \PY{n}{x}\PY{p}{)} \PY{c+c1}{\PYZsh{}x must be in nm \PYZsh{}\PYZsh{}\PYZsh{}\PYZsh{}ISSUE HERE}
+                  \PY{n}{x} \PY{o}{=} \PY{n}{WLtoE}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{data}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+                  
+              \PY{k}{if} \PY{n}{ALL\PYZus{}PLOTS\PYZus{}MAX\PYZus{}1} \PY{o}{==} \PY{k+kc}{True}\PY{p}{:}
+                  \PY{n}{fit} \PY{o}{=} \PY{n+nb}{max}\PY{p}{(}\PY{n}{y}\PY{p}{)}
+                  \PY{k}{for} \PY{n}{n} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{y\PYZus{}norm}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+                      \PY{n}{y\PYZus{}norm}\PY{p}{[}\PY{n}{n}\PY{p}{]} \PY{o}{=} \PY{n}{y\PYZus{}norm}\PY{p}{[}\PY{n}{n}\PY{p}{]} \PY{o}{/} \PY{n}{fit}
+              \PY{k}{else}\PY{p}{:}
+                  \PY{k}{for} \PY{n}{n} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{y\PYZus{}norm}\PY{p}{)}\PY{p}{)}\PY{p}{:}
+                      \PY{n}{y\PYZus{}norm}\PY{p}{[}\PY{n}{n}\PY{p}{]} \PY{o}{=} \PY{n}{y\PYZus{}norm}\PY{p}{[}\PY{n}{n}\PY{p}{]} \PY{o}{/} \PY{n+nb}{max}\PY{p}{(}\PY{n}{y\PYZus{}all}\PY{p}{)}
+          \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x}\PY{p}{,}\PY{n}{y\PYZus{}norm}\PY{p}{,} \PY{n}{linewidth} \PY{o}{=} \PY{l+m+mi}{1}\PY{p}{)}
+
+    \PY{c+c1}{\PYZsh{}plot}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Intensity (au)}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}  \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{8}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{xticks}\PY{p}{(}\PY{n}{fontsize} \PY{o}{=} \PY{l+m+mi}{10}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{yticks}\PY{p}{(}\PY{n}{fontsize} \PY{o}{=} \PY{l+m+mi}{10}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{grid}\PY{p}{(}\PY{k+kc}{True}\PY{p}{,} \PY{n}{alpha}\PY{o}{=}\PY{l+m+mf}{0.5}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{legend}\PY{p}{,} \PY{n}{bbox\PYZus{}to\PYZus{}anchor} \PY{o}{=} \PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mf}{0.35}\PY{p}{)}\PY{p}{)}
+    
+    \PY{k}{if} \PY{n}{ENERGY\PYZus{}ONLY} \PY{o}{==} \PY{k+kc}{True}\PY{p}{:}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{xlim}\PY{p}{(}\PY{n}{WLtoE}\PY{p}{(}\PY{n}{PLOT\PYZus{}LIMIT}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{data}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)} \PY{c+c1}{\PYZsh{}this was making data jagged beacuse WLtoE was limited to float .2f for labels}
+        \PY{n}{x\PYZus{}label} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Energy (eV)}\PY{l+s+s2}{\PYZdq{}}
+    \PY{k}{else}\PY{p}{:}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{xlim}\PY{p}{(}\PY{n}{PLOT\PYZus{}LIMIT}\PY{p}{)}
+        \PY{n}{x\PYZus{}label} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Wavelength (nm)}\PY{l+s+s2}{\PYZdq{}}
+        
+    \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{n}{x\PYZus{}label}\PY{p}{,} \PY{n}{fontsize}\PY{o}{=}\PY{l+m+mi}{8}\PY{p}{)}
+    
+    \PY{k}{if} \PY{n}{ENERGY\PYZus{}ONLY} \PY{o}{==} \PY{k+kc}{True}\PY{p}{:}
+        \PY{n}{title\PYZus{}label} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{energy}\PY{l+s+s1}{\PYZsq{}}
+    \PY{k}{else}\PY{p}{:}
+        \PY{n}{title\PYZus{}label} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{wavelength}\PY{l+s+s1}{\PYZsq{}}
+    
+    \PY{k}{if} \PY{n}{energy\PYZus{}scale} \PY{o}{==} \PY{k+kc}{True} \PY{o+ow}{and} \PY{n}{ENERGY\PYZus{}ONLY} \PY{o}{==} \PY{k+kc}{False}\PY{p}{:}
+        \PY{n}{add\PYZus{}energy\PYZus{}scale}\PY{p}{(}\PY{n}{plt}\PY{p}{)}
+        
+    \PY{c+c1}{\PYZsh{}this will plot exponential fit on linear scale plot if uncommented}
+    \PY{c+c1}{\PYZsh{} if LOG\PYZus{}PLOT\PYZus{}FITTING == True:}
+    \PY{c+c1}{\PYZsh{}     x\PYZus{}fit, y\PYZus{}fitted, slope = return\PYZus{}boltzmann (x, y\PYZus{}norm)}
+    \PY{c+c1}{\PYZsh{}     plt.plot(x\PYZus{}fit, y\PYZus{}fitted, lw=1)}
+    \PY{c+c1}{\PYZsh{} print(\PYZdq{}slope = \PYZdq{} + str(slope))}
+        
+    \PY{k}{if} \PY{n}{plot\PYZus{}type} \PY{o}{==} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{log}\PY{l+s+s1}{\PYZsq{}}\PY{p}{:}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{yscale}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{log}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} \PY{c+c1}{\PYZsh{}change to log}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{[Y\PYZus{}LIMIT = }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s2}{]}\PY{l+s+s2}{\PYZdq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n+nb}{str}\PY{p}{(}\PY{n+nb}{bool}\PY{p}{(}\PY{n}{Y\PYZus{}LIMIT}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+        \PY{k}{if} \PY{n+nb}{bool}\PY{p}{(}\PY{n}{Y\PYZus{}LIMIT}\PY{p}{)} \PY{o}{==} \PY{k+kc}{True}\PY{p}{:}
+            \PY{n}{plt}\PY{o}{.}\PY{n}{ylim}\PY{p}{(}\PY{n}{Y\PYZus{}LIMIT}\PY{p}{)}   
+        \PY{k}{if} \PY{n}{LOG\PYZus{}PLOT\PYZus{}FITTING} \PY{o}{==} \PY{k+kc}{True} \PY{o+ow}{and} \PY{n}{ENERGY\PYZus{}ONLY} \PY{o}{==} \PY{k+kc}{True}\PY{p}{:}
+            \PY{n}{x\PYZus{}fit}\PY{p}{,} \PY{n}{y\PYZus{}fitted}\PY{p}{,} \PY{n}{slope}\PY{p}{,} \PY{n}{error} \PY{o}{=} \PY{n}{return\PYZus{}boltzmann}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{y\PYZus{}norm}\PY{p}{)} \PY{c+c1}{\PYZsh{}extrapolate exponential features}
+            \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{x\PYZus{}fit}\PY{p}{,} \PY{n}{y\PYZus{}fitted}\PY{p}{,} \PY{n}{lw}\PY{o}{=}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{ls}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{dashed}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{red}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)} 
+            \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{slope = }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{slope}\PY{p}{)}\PY{p}{)}
+            
+            \PY{c+c1}{\PYZsh{}considers maximum possible error based on cavariance maatrix returned by polyfit()}
+            \PY{n}{T} \PY{o}{=} \PY{n}{J\PYZus{}eV} \PY{o}{/}\PY{p}{(}\PY{n}{k} \PY{o}{*} \PY{n+nb}{abs}\PY{p}{(}\PY{n}{slope}\PY{p}{)}\PY{p}{)}
+            \PY{n}{T\PYZus{}error\PYZus{}1} \PY{o}{=} \PY{n+nb}{abs}\PY{p}{(}\PY{n}{J\PYZus{}eV} \PY{o}{/}\PY{p}{(}\PY{n}{k} \PY{o}{*} \PY{n+nb}{abs}\PY{p}{(}\PY{n}{slope} \PY{o}{\PYZhy{}} \PY{n}{error}\PY{p}{)}\PY{p}{)} \PY{o}{\PYZhy{}} \PY{n}{T}\PY{p}{)}
+            \PY{n}{T\PYZus{}error\PYZus{}2} \PY{o}{=} \PY{n+nb}{abs}\PY{p}{(}\PY{n}{J\PYZus{}eV} \PY{o}{/}\PY{p}{(}\PY{n}{k} \PY{o}{*} \PY{n+nb}{abs}\PY{p}{(}\PY{n}{slope} \PY{o}{+} \PY{n}{error}\PY{p}{)}\PY{p}{)} \PY{o}{\PYZhy{}} \PY{n}{T}\PY{p}{)}
+            \PY{n}{T\PYZus{}error} \PY{o}{=} \PY{n+nb}{max}\PY{p}{(}\PY{n}{T\PYZus{}error\PYZus{}1}\PY{p}{,} \PY{n}{T\PYZus{}error\PYZus{}2}\PY{p}{)}
+            \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{carrier T = }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{T}\PY{p}{)} \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{l+s+sa}{u}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}u00B1}\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{T\PYZus{}error}\PY{p}{)} \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ K}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+            \PY{n}{legend}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{exp(}\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s2}{ * }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s2}{) }\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{T = }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s2}{ }\PY{l+s+s2}{\PYZdq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n+nb}{float}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+si}{\PYZob{}:.2f\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{slope}\PY{p}{)}\PY{p}{)}\PY{p}{,} \PY{n}{title\PYZus{}label}\PY{p}{,} \PY{n+nb}{float}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+si}{\PYZob{}:.2f\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{T}\PY{p}{)}\PY{p}{)}\PY{p}{)} \PY{o}{+} \PY{l+s+sa}{u}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}u00B1}\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ }\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s2}{ K}\PY{l+s+s2}{\PYZdq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n+nb}{float}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+si}{\PYZob{}:.2f\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{T\PYZus{}error}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+            \PY{n}{plt}\PY{o}{.}\PY{n}{legend}\PY{p}{(}\PY{n}{legend}\PY{p}{,} \PY{n}{bbox\PYZus{}to\PYZus{}anchor} \PY{o}{=} \PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,}\PY{l+m+mf}{0.35}\PY{p}{)}\PY{p}{)}
+            \PY{n}{title\PYZus{}label} \PY{o}{=} \PY{n}{title\PYZus{}label} \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZus{}fitted}\PY{l+s+s2}{\PYZdq{}}
+        \PY{k}{elif} \PY{n}{LOG\PYZus{}PLOT\PYZus{}FITTING} \PY{o}{==} \PY{k+kc}{True} \PY{o+ow}{and} \PY{n}{ENERGY\PYZus{}ONLY} \PY{o}{==} \PY{k+kc}{False}\PY{p}{:}
+            \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Cannot determine carrier temperature from wavelength scale plot [ENERGY\PYZus{}ONLY = False]}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{All\PYZus{}Spectrums\PYZus{}log\PYZus{}}\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{title\PYZus{}label}\PY{p}{)}\PY{p}{,} \PY{n}{dpi} \PY{o}{=} \PY{l+m+mi}{1000}\PY{p}{,} \PY{n}{bbox\PYZus{}inches}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{tight}\PY{l+s+s1}{\PYZsq{}} \PY{p}{)}
+    \PY{k}{else}\PY{p}{:}
+        \PY{n}{plt}\PY{o}{.}\PY{n}{savefig}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{All\PYZus{}Spectrums\PYZus{}}\PY{l+s+si}{\PYZob{}\PYZcb{}}\PY{l+s+s1}{\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{title\PYZus{}label}\PY{p}{)}\PY{p}{,} \PY{n}{dpi} \PY{o}{=} \PY{l+m+mi}{1000}\PY{p}{,} \PY{n}{bbox\PYZus{}inches}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{tight}\PY{l+s+s1}{\PYZsq{}} \PY{p}{)}
+        
+    \PY{n}{plt}\PY{o}{.}\PY{n}{show}\PY{p}{(}\PY{p}{)}  
+
+
+\PY{c+c1}{\PYZsh{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}MAIN\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZhy{}\PYZsh{}}
+
+\PY{n}{os}\PY{o}{.}\PY{n}{chdir}\PY{p}{(}\PY{n}{path}\PY{p}{)}
+\PY{n}{All\PYZus{}files} \PY{o}{=} \PY{n}{glob}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{*.txt}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{rc}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{axes}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{linewidth}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{font.weight}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{normal}\PY{l+s+s2}{\PYZdq{}}
+\PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{axes.labelweight}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{normal}\PY{l+s+s2}{\PYZdq{}}
+\PY{n}{plt}\PY{o}{.}\PY{n}{rcParams}\PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{font.family}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} \PY{o}{=} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{monospace}\PY{l+s+s2}{\PYZdq{}}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{n}{All\PYZus{}files}\PY{p}{)}
+\PY{c+c1}{\PYZsh{} MAKES GRAPH OF EACH SPECTRUM}
+\PY{n}{y\PYZus{}all} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+\PY{k}{for} \PY{n}{file} \PY{o+ow}{in} \PY{n}{All\PYZus{}files}\PY{p}{:}
+      \PY{c+c1}{\PYZsh{} Create the filepath of particular file}
+      \PY{n}{file\PYZus{}path} \PY{o}{=}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+si}{\PYZob{}}\PY{n}{path}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{/}\PY{l+s+si}{\PYZob{}}\PY{n}{file}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{\PYZdq{}}
+      
+      \PY{k}{with} \PY{n+nb}{open}\PY{p}{(}\PY{n}{file\PYZus{}path}\PY{p}{)} \PY{k}{as} \PY{n}{f}\PY{p}{:}
+          \PY{n}{lines} \PY{o}{=} \PY{n}{f}\PY{o}{.}\PY{n}{readlines}\PY{p}{(}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{14}\PY{p}{:}\PY{p}{]}
+          \PY{n}{x} \PY{o}{=} \PY{p}{[}\PY{n+nb}{float}\PY{p}{(}\PY{n}{line}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{)} \PY{k}{for} \PY{n}{line} \PY{o+ow}{in} \PY{n}{lines}\PY{p}{]}
+          \PY{n}{y} \PY{o}{=} \PY{p}{[}\PY{n+nb}{float}\PY{p}{(}\PY{n}{line}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{)} \PY{k}{for} \PY{n}{line} \PY{o+ow}{in} \PY{n}{lines}\PY{p}{]}
+                 
+          \PY{c+c1}{\PYZsh{}finding peak of spectrum}
+          \PY{n}{i} \PY{o}{=} \PY{n}{y}\PY{o}{.}\PY{n}{index}\PY{p}{(}\PY{n+nb}{max}\PY{p}{(}\PY{n}{y}\PY{p}{)}\PY{p}{)}
+          \PY{n}{maximum} \PY{o}{=} \PY{n}{x}\PY{p}{[}\PY{n}{i}\PY{p}{]}
+          \PY{k}{if} \PY{n}{ENERGY\PYZus{}ONLY} \PY{o}{==} \PY{k+kc}{True}\PY{p}{:}
+              \PY{n}{y\PYZus{}all}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{convert\PYZus{}wl\PYZus{}intensity\PYZus{}to\PYZus{}energy\PYZus{}intensity}\PY{p}{(}\PY{n+nb}{max}\PY{p}{(}\PY{n}{y}\PY{p}{)}\PY{p}{,} \PY{n}{x}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+          \PY{k}{else}\PY{p}{:}
+              \PY{n}{y\PYZus{}all}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{max}\PY{p}{(}\PY{n}{y}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+sa}{f}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+si}{\PYZob{}}\PY{n}{file}\PY{l+s+si}{\PYZcb{}}\PY{l+s+s2}{ \PYZhy{} max = }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{x}\PY{p}{[}\PY{n}{i}\PY{p}{]}\PY{p}{)}\PY{o}{+}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ nm}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}CREATING A SCATTER PLOT OF DATA}
+          \PY{k}{if} \PY{n}{PLOT\PYZus{}INDIVIDUAL\PYZus{}SPECTRUMS} \PY{o}{==} \PY{k+kc}{True}\PY{p}{:}
+              \PY{n}{plot\PYZus{}graph}\PY{p}{(}\PY{n}{x}\PY{p}{,} \PY{n}{y}\PY{p}{,} \PY{n}{INCLUDE\PYZus{}ENERGY\PYZus{}SCALE}\PY{p}{,} \PY{n}{ENERGY\PYZus{}ONLY}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{}MAKE ONE GRAPH WITH ALL SPECTRUMS}
+\PY{k}{if} \PY{n}{CREATE\PYZus{}COMPILED\PYZus{}PLOT} \PY{o}{==} \PY{k+kc}{True}\PY{p}{:}
+    \PY{n}{legend} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+    \PY{k}{for} \PY{n}{file} \PY{o+ow}{in} \PY{n}{All\PYZus{}files}\PY{p}{:}
+        \PY{k}{if} \PY{n+nb}{str}\PY{p}{(}\PY{n}{file}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{:}\PY{l+m+mi}{2}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ZM}\PY{l+s+s2}{\PYZdq{}}\PY{p}{:}
+            \PY{n}{legend}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{str}\PY{p}{(}\PY{n}{file}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{:}\PY{l+m+mi}{3}\PY{p}{]} \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{file}\PY{p}{)}\PY{p}{[}\PY{l+m+mi}{4}\PY{p}{:}\PY{l+m+mi}{7}\PY{p}{]} \PY{o}{+} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ }\PY{l+s+s2}{\PYZdq{}} \PY{o}{+} \PY{n+nb}{str}\PY{p}{(}\PY{n}{file}\PY{p}{)}\PY{p}{[}\PY{n+nb}{str}\PY{p}{(}\PY{n}{file}\PY{p}{)}\PY{o}{.}\PY{n}{find}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{int}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{o}{+}\PY{l+m+mi}{4}\PY{p}{:}\PY{n+nb}{str}\PY{p}{(}\PY{n}{file}\PY{p}{)}\PY{o}{.}\PY{n}{find}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.txt}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{]}\PY{o}{.}\PY{n}{replace}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZus{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ }\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}
+        \PY{k}{else}\PY{p}{:}
+            \PY{n}{legend}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{str}\PY{p}{(}\PY{n}{file}\PY{p}{)}\PY{o}{.}\PY{n}{replace}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZus{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ }\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{o}{.}\PY{n}{replace}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.txt}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}\PY{p}{)}
+    
+    \PY{n}{plot\PYZus{}all}\PY{p}{(}\PY{n}{All\PYZus{}files}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{log}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{INCLUDE\PYZus{}ENERGY\PYZus{}SCALE}\PY{p}{,} \PY{n}{legend}\PY{p}{,} \PY{n}{y\PYZus{}all}\PY{p}{)}
+    \PY{n}{plot\PYZus{}all}\PY{p}{(}\PY{n}{All\PYZus{}files}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{linear}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,} \PY{n}{INCLUDE\PYZus{}ENERGY\PYZus{}SCALE}\PY{p}{,} \PY{n}{legend}\PY{p}{,} \PY{n}{y\PYZus{}all}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+['MS\_microLED\_green\_40um\_0.25mA\_9ms-int.txt', 'MS\_microLED\_green\_40um\_0.5mA\_9ms-
+int.txt', 'MS\_microLED\_green\_40um\_0.75mA\_9ms-int.txt',
+'MS\_microLED\_green\_40um\_1.0mA\_9ms-int.txt', 'MS\_microLED\_green\_40um\_1.25mA\_9ms-
+int.txt', 'MS\_microLED\_green\_40um\_1.5mA\_9ms-int.txt',
+'MS\_microLED\_green\_40um\_1.75mA\_9ms-int.txt', 'MS\_microLED\_green\_40um\_2.0mA\_9ms-
+int.txt']
+MS\_microLED\_green\_40um\_0.25mA\_9ms-int.txt - max = 523.218 nm
+MS\_microLED\_green\_40um\_0.5mA\_9ms-int.txt - max = 523.025 nm
+MS\_microLED\_green\_40um\_0.75mA\_9ms-int.txt - max = 523.025 nm
+MS\_microLED\_green\_40um\_1.0mA\_9ms-int.txt - max = 523.025 nm
+MS\_microLED\_green\_40um\_1.25mA\_9ms-int.txt - max = 514.534 nm
+MS\_microLED\_green\_40um\_1.5mA\_9ms-int.txt - max = 514.534 nm
+MS\_microLED\_green\_40um\_1.75mA\_9ms-int.txt - max = 513.375 nm
+MS\_microLED\_green\_40um\_2.0mA\_9ms-int.txt - max = 514.534 nm
+
+[Y\_LIMIT = True]
+[-33.24871892  81.63562505]
+[[ 0.08631691 -0.21901396]
+ [-0.21901396  0.55578631]]
+0.745510773929655
+
+slope = -33.24871891938876
+carrier T = 348.99406105723114 ± 8.004712377660383 K
+    \end{Verbatim}
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_0_1.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_0_2.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+
+\end{Verbatim}
+\end{tcolorbox}
+
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+\end{document}

@@ -1,0 +1,493 @@
+    
+    Package/Dependancy Installs \emph{(Requirement for Colab - run as
+shown)}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{err}{!}\PY{n}{pip} \PY{n}{install} \PY{n}{gym} \PY{n}{pyvirtualdisplay} \PY{o}{\PYZgt{}} \PY{o}{/}\PY{n}{dev}\PY{o}{/}\PY{n}{null} \PY{l+m+mi}{2}\PY{o}{\PYZgt{}}\PY{o}{\PYZam{}}\PY{l+m+mi}{1}
+\PY{err}{!}\PY{n}{apt}\PY{o}{\PYZhy{}}\PY{n}{get} \PY{n}{install} \PY{o}{\PYZhy{}}\PY{n}{y} \PY{n}{xvfb} \PY{n}{python}\PY{o}{\PYZhy{}}\PY{n}{opengl} \PY{n}{ffmpeg} \PY{o}{\PYZgt{}} \PY{o}{/}\PY{n}{dev}\PY{o}{/}\PY{n}{null} \PY{l+m+mi}{2}\PY{o}{\PYZgt{}}\PY{o}{\PYZam{}}\PY{l+m+mi}{1}
+\PY{err}{!}\PY{n}{apt}\PY{o}{\PYZhy{}}\PY{n}{get} \PY{n}{update} \PY{o}{\PYZgt{}} \PY{o}{/}\PY{n}{dev}\PY{o}{/}\PY{n}{null} \PY{l+m+mi}{2}\PY{o}{\PYZgt{}}\PY{o}{\PYZam{}}\PY{l+m+mi}{1}
+\PY{err}{!}\PY{n}{apt}\PY{o}{\PYZhy{}}\PY{n}{get} \PY{n}{install} \PY{n}{cmake} \PY{o}{\PYZgt{}} \PY{o}{/}\PY{n}{dev}\PY{o}{/}\PY{n}{null} \PY{l+m+mi}{2}\PY{o}{\PYZgt{}}\PY{o}{\PYZam{}}\PY{l+m+mi}{1}
+\PY{err}{!}\PY{n}{pip} \PY{n}{install} \PY{o}{\PYZhy{}}\PY{o}{\PYZhy{}}\PY{n}{upgrade} \PY{n}{setuptools} \PY{l+m+mi}{2}\PY{o}{\PYZgt{}}\PY{o}{\PYZam{}}\PY{l+m+mi}{1}
+\PY{err}{!}\PY{n}{pip} \PY{n}{install} \PY{n}{ez\PYZus{}setup} \PY{o}{\PYZgt{}} \PY{o}{/}\PY{n}{dev}\PY{o}{/}\PY{n}{null} \PY{l+m+mi}{2}\PY{o}{\PYZgt{}}\PY{o}{\PYZam{}}\PY{l+m+mi}{1}
+\PY{err}{!}\PY{n}{pip} \PY{n}{install} \PY{n}{gym}\PY{p}{[}\PY{n}{classic\PYZus{}control}\PY{p}{]}
+\PY{err}{!}\PY{n}{pip3} \PY{n}{install} \PY{n}{torch}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Imports and Packages \emph{(all)}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}PyTorch}
+\PY{k+kn}{import} \PY{n+nn}{torch}
+\PY{k+kn}{from} \PY{n+nn}{torch} \PY{k+kn}{import} \PY{n}{nn}
+\PY{k+kn}{from} \PY{n+nn}{torch}\PY{n+nn}{.}\PY{n+nn}{nn} \PY{k+kn}{import} \PY{n}{functional} \PY{k}{as} \PY{n}{F}
+\PY{k+kn}{from} \PY{n+nn}{torch} \PY{k+kn}{import} \PY{n}{optim}
+
+\PY{c+c1}{\PYZsh{}OpenAI Gym}
+\PY{k+kn}{import} \PY{n+nn}{gym}
+\PY{k+kn}{from} \PY{n+nn}{gym} \PY{k+kn}{import} \PY{n}{logger} \PY{k}{as} \PY{n}{gymlogger}
+\PY{k+kn}{from} \PY{n+nn}{gym}\PY{n+nn}{.}\PY{n+nn}{wrappers} \PY{k+kn}{import} \PY{n}{RecordVideo}
+\PY{n}{gym}\PY{o}{.}\PY{n}{logger}\PY{o}{.}\PY{n}{set\PYZus{}level}\PY{p}{(}\PY{l+m+mi}{40}\PY{p}{)}  \PY{c+c1}{\PYZsh{}log errors encountered only}
+
+\PY{c+c1}{\PYZsh{}Misc}
+\PY{k+kn}{import} \PY{n+nn}{numpy} \PY{k}{as} \PY{n+nn}{np}
+\PY{k+kn}{import} \PY{n+nn}{random}
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}
+\PY{k+kn}{import} \PY{n+nn}{matplotlib}\PY{n+nn}{.}\PY{n+nn}{pyplot} \PY{k}{as} \PY{n+nn}{plt}
+\PY{o}{\PYZpc{}}\PY{n}{matplotlib} \PY{n}{inline}
+\PY{k+kn}{import} \PY{n+nn}{math}
+\PY{k+kn}{import} \PY{n+nn}{time}
+\PY{k+kn}{from} \PY{n+nn}{collections} \PY{k+kn}{import} \PY{n}{deque}
+\PY{k+kn}{from} \PY{n+nn}{itertools} \PY{k+kn}{import} \PY{n}{count}
+
+\PY{c+c1}{\PYZsh{}Display Window}
+\PY{k+kn}{import} \PY{n+nn}{glob}
+\PY{k+kn}{import} \PY{n+nn}{io}
+\PY{k+kn}{import} \PY{n+nn}{base64}
+\PY{k+kn}{import} \PY{n+nn}{IPython}
+\PY{k+kn}{from} \PY{n+nn}{IPython}\PY{n+nn}{.}\PY{n+nn}{display} \PY{k+kn}{import} \PY{n}{HTML}
+\PY{k+kn}{from} \PY{n+nn}{IPython} \PY{k+kn}{import} \PY{n}{display} \PY{k}{as} \PY{n}{ipythondisplay}
+\PY{n}{is\PYZus{}ipython} \PY{o}{=} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{inline}\PY{l+s+s1}{\PYZsq{}} \PY{o+ow}{in} \PY{n}{matplotlib}\PY{o}{.}\PY{n}{get\PYZus{}backend}\PY{p}{(}\PY{p}{)}
+\PY{k+kn}{from} \PY{n+nn}{IPython}\PY{n+nn}{.}\PY{n+nn}{display} \PY{k+kn}{import} \PY{n}{clear\PYZus{}output}
+\end{Verbatim}
+\end{tcolorbox}
+
+    Display Setup (Environment Monitor)
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k+kn}{from} \PY{n+nn}{pyvirtualdisplay} \PY{k+kn}{import} \PY{n}{Display}
+\PY{n}{display} \PY{o}{=} \PY{n}{Display}\PY{p}{(}\PY{n}{visible}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{size}\PY{o}{=}\PY{p}{(}\PY{l+m+mi}{1400}\PY{p}{,} \PY{l+m+mi}{900}\PY{p}{)}\PY{p}{)}
+\PY{n}{display}\PY{o}{.}\PY{n}{start}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{def} \PY{n+nf}{show\PYZus{}video}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+  \PY{n}{mp4list} \PY{o}{=} \PY{n}{glob}\PY{o}{.}\PY{n}{glob}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{video/*.mp4}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+  \PY{k}{if} \PY{n+nb}{len}\PY{p}{(}\PY{n}{mp4list}\PY{p}{)} \PY{o}{\PYZgt{}} \PY{l+m+mi}{0}\PY{p}{:}
+    \PY{n}{mp4} \PY{o}{=} \PY{n}{mp4list}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}
+    \PY{n}{video} \PY{o}{=} \PY{n}{io}\PY{o}{.}\PY{n}{open}\PY{p}{(}\PY{n}{mp4}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{r+b}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{o}{.}\PY{n}{read}\PY{p}{(}\PY{p}{)}
+    \PY{n}{encoded} \PY{o}{=} \PY{n}{base64}\PY{o}{.}\PY{n}{b64encode}\PY{p}{(}\PY{n}{video}\PY{p}{)}
+    \PY{n}{ipythondisplay}\PY{o}{.}\PY{n}{display}\PY{p}{(}\PY{n}{HTML}\PY{p}{(}\PY{n}{data}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}\PY{l+s+s1}{\PYZlt{}video alt=}\PY{l+s+s1}{\PYZdq{}}\PY{l+s+s1}{test}\PY{l+s+s1}{\PYZdq{}}\PY{l+s+s1}{ autoplay }
+\PY{l+s+s1}{                loop controls style=}\PY{l+s+s1}{\PYZdq{}}\PY{l+s+s1}{height: 400px;}\PY{l+s+s1}{\PYZdq{}}\PY{l+s+s1}{\PYZgt{}}
+\PY{l+s+s1}{                \PYZlt{}source src=}\PY{l+s+s1}{\PYZdq{}}\PY{l+s+s1}{data:video/mp4;base64,}\PY{l+s+si}{\PYZob{}0\PYZcb{}}\PY{l+s+s1}{\PYZdq{}}\PY{l+s+s1}{ type=}\PY{l+s+s1}{\PYZdq{}}\PY{l+s+s1}{video/mp4}\PY{l+s+s1}{\PYZdq{}}\PY{l+s+s1}{ /\PYZgt{}. }
+\PY{l+s+s1}{             \PYZlt{}/video\PYZgt{}}\PY{l+s+s1}{\PYZsq{}\PYZsq{}\PYZsq{}}\PY{o}{.}\PY{n}{format}\PY{p}{(}\PY{n}{encoded}\PY{o}{.}\PY{n}{decode}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{ascii}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+  \PY{k}{else}\PY{p}{:} 
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{error finding video file.}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+\PY{k}{def} \PY{n+nf}{wrap\PYZus{}env}\PY{p}{(}\PY{n}{env}\PY{p}{)}\PY{p}{:}
+  \PY{n}{env} \PY{o}{=} \PY{n}{RecordVideo}\PY{p}{(}\PY{n}{env}\PY{p}{,} \PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{./video}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+  \PY{k}{return} \PY{n}{env}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{q-learning}{%
+\section{\texorpdfstring{\text{Q-Learning}}{Q-Learning}}\label{q-learning}}
+
+
+    \textbf{Training Algorithm} \textbar{} Implementation of Algorithm 6.1 with video outputs, learns to beat a particular instance of `Frozen Lake' by OpenAI
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}CHANGE RUNTIME PARAMETERS HERE}
+\PY{n}{document\PYZus{}video} \PY{o}{=} \PY{k+kc}{True}
+\PY{n}{video\PYZus{}frequency} \PY{o}{=} \PY{l+m+mi}{1000} \PY{c+c1}{\PYZsh{}How often video updates show if enabled}
+\PY{n}{clear} \PY{o}{=} \PY{k+kc}{True}           \PY{c+c1}{\PYZsh{}Clear output for each update}
+\PY{n}{env\PYZus{}set} \PY{o}{=} \PY{p}{[}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{FrozenLake\PYZhy{}v1}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{k+kc}{True}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{4x4}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]} 
+           \PY{c+c1}{\PYZsh{}environment, is\PYZus{}slippery, map size}
+
+\PY{n}{env} \PY{o}{=} \PY{n}{gym}\PY{o}{.}\PY{n}{make}\PY{p}{(}\PY{n}{env\PYZus{}set}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{is\PYZus{}slippery}\PY{o}{=}\PY{n}{env\PYZus{}set}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PYZbs{}
+                        \PY{n}{map\PYZus{}name}\PY{o}{=}\PY{n}{env\PYZus{}set}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}
+\PY{n}{action\PYZus{}space\PYZus{}size} \PY{o}{=} \PY{n}{env}\PY{o}{.}\PY{n}{action\PYZus{}space}\PY{o}{.}\PY{n}{n}     \PY{c+c1}{\PYZsh{}returns as integer}
+\PY{n}{state\PYZus{}space\PYZus{}size} \PY{o}{=} \PY{n}{env}\PY{o}{.}\PY{n}{observation\PYZus{}space}\PY{o}{.}\PY{n}{n} \PY{c+c1}{\PYZsh{}returns as integer}
+
+\PY{n}{q\PYZus{}table} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{p}{(}\PY{n}{state\PYZus{}space\PYZus{}size}\PY{p}{,} \PY{n}{action\PYZus{}space\PYZus{}size}\PY{p}{)}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{}HYPERPARAMETERS}
+\PY{n}{num\PYZus{}episodes} \PY{o}{=} \PY{l+m+mi}{10000}
+\PY{n}{max\PYZus{}steps\PYZus{}per\PYZus{}episode} \PY{o}{=} \PY{l+m+mi}{100}
+\PY{n}{learning\PYZus{}rate} \PY{o}{=} \PY{l+m+mf}{0.1}          
+\PY{n}{discount\PYZus{}rate} \PY{o}{=} \PY{l+m+mf}{0.99}            
+\PY{n}{exploration\PYZus{}rate} \PY{o}{=} \PY{l+m+mi}{1}
+\PY{n}{max\PYZus{}exploration\PYZus{}rate} \PY{o}{=} \PY{l+m+mi}{1}
+\PY{n}{min\PYZus{}exploration\PYZus{}rate} \PY{o}{=} \PY{l+m+mf}{0.01}     
+\PY{n}{exploration\PYZus{}decay\PYZus{}rate} \PY{o}{=} \PY{l+m+mf}{0.001}  
+
+\PY{n}{rewards\PYZus{}all\PYZus{}episodes} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+
+\PY{c+c1}{\PYZsh{}Q\PYZhy{}Learning / Training}
+\PY{k}{for} \PY{n}{episode} \PY{o+ow}{in} \PY{n+nb}{range} \PY{p}{(}\PY{n}{num\PYZus{}episodes}\PY{p}{)}\PY{p}{:}
+
+  \PY{k}{if} \PY{n}{episode}\PY{o}{\PYZpc{}}\PY{n}{video\PYZus{}frequency} \PY{o}{==} \PY{l+m+mi}{0} \PY{o+ow}{and} \PY{n}{document\PYZus{}video} \PY{o}{==} \PY{k+kc}{True}\PY{p}{:}
+    \PY{n}{env} \PY{o}{=} \PY{n}{wrap\PYZus{}env}\PY{p}{(}\PY{n}{gym}\PY{o}{.}\PY{n}{make}\PY{p}{(}\PY{n}{env\PYZus{}set}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{is\PYZus{}slippery}\PY{o}{=}\PY{n}{env\PYZus{}set}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,}\PYZbs{}
+                            \PY{n}{map\PYZus{}name}\PY{o}{=}\PY{n}{env\PYZus{}set}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+  
+  \PY{n}{state} \PY{o}{=} \PY{n}{env}\PY{o}{.}\PY{n}{reset}\PY{p}{(}\PY{p}{)}         \PY{c+c1}{\PYZsh{}starts/resets simulation}
+  \PY{n}{done} \PY{o}{=} \PY{k+kc}{False}                \PY{c+c1}{\PYZsh{}episode state (boolean)}
+  \PY{n}{rewards\PYZus{}current\PYZus{}episode} \PY{o}{=} \PY{l+m+mi}{0} \PY{c+c1}{\PYZsh{}reset rewards}
+
+  \PY{k}{for} \PY{n}{step} \PY{o+ow}{in} \PY{n+nb}{range} \PY{p}{(}\PY{n}{max\PYZus{}steps\PYZus{}per\PYZus{}episode}\PY{p}{)}\PY{p}{:}
+    \PY{n}{exploration\PYZus{}rate\PYZus{}thresh} \PY{o}{=} \PY{n}{random}\PY{o}{.}\PY{n}{uniform}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}
+    \PY{k}{if} \PY{n}{exploration\PYZus{}rate\PYZus{}thresh} \PY{o}{\PYZgt{}} \PY{n}{exploration\PYZus{}rate}\PY{p}{:}
+      \PY{n}{action} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{argmax}\PY{p}{(}\PY{n}{q\PYZus{}table}\PY{p}{[}\PY{n}{state}\PY{p}{,}\PY{p}{:}\PY{p}{]}\PY{p}{)} \PY{c+c1}{\PYZsh{}EXPLOITATION}
+    \PY{k}{else}\PY{p}{:}
+      \PY{n}{action} \PY{o}{=} \PY{n}{env}\PY{o}{.}\PY{n}{action\PYZus{}space}\PY{o}{.}\PY{n}{sample}\PY{p}{(}\PY{p}{)}   \PY{c+c1}{\PYZsh{}EXPLORATION}
+
+    \PY{c+c1}{\PYZsh{}take step, return env info}
+    \PY{n}{new\PYZus{}state}\PY{p}{,} \PY{n}{reward}\PY{p}{,} \PY{n}{done}\PY{p}{,} \PY{n}{info} \PY{o}{=} \PY{n}{env}\PY{o}{.}\PY{n}{step}\PY{p}{(}\PY{n}{action}\PY{p}{)} 
+
+    \PY{c+c1}{\PYZsh{}update Q\PYZhy{}Table using Bellman Equation}
+    \PY{n}{q\PYZus{}table}\PY{p}{[}\PY{n}{state}\PY{p}{,} \PY{n}{action}\PY{p}{]} \PY{o}{=} \PY{n}{q\PYZus{}table}\PY{p}{[}\PY{n}{state}\PY{p}{,} \PY{n}{action}\PY{p}{]} \PY{o}{*} \PY{p}{(}\PY{l+m+mi}{1} \PY{o}{\PYZhy{}} \PYZbs{}
+        \PY{n}{learning\PYZus{}rate}\PY{p}{)} \PY{o}{+} \PY{n}{learning\PYZus{}rate} \PY{o}{*} \PY{p}{(}\PY{n}{reward} \PY{o}{+} \PY{n}{discount\PYZus{}rate} \PYZbs{}
+                                \PY{o}{*} \PY{n}{np}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{n}{q\PYZus{}table}\PY{p}{[}\PY{n}{new\PYZus{}state}\PY{p}{,} \PY{p}{:}\PY{p}{]}\PY{p}{)}\PY{p}{)} 
+
+    \PY{n}{state} \PY{o}{=} \PY{n}{new\PYZus{}state}
+    \PY{n}{rewards\PYZus{}current\PYZus{}episode} \PY{o}{+}\PY{o}{=} \PY{n}{reward}
+
+    \PY{k}{if} \PY{n}{done} \PY{o}{==} \PY{k+kc}{True}\PY{p}{:}
+      \PY{k}{break}  \PY{c+c1}{\PYZsh{}next episode}
+
+  \PY{c+c1}{\PYZsh{}check if episode is at an update\PYZus{}ep and render video if so}
+  \PY{k}{if} \PY{n}{episode}\PY{o}{\PYZpc{}}\PY{n}{video\PYZus{}frequency} \PY{o}{==} \PY{l+m+mi}{0} \PY{o+ow}{and} \PY{n}{document\PYZus{}video} \PY{o}{==} \PY{k+kc}{True}\PY{p}{:}
+    \PY{n}{env}\PY{o}{.}\PY{n}{close}\PY{p}{(}\PY{p}{)}
+    \PY{k}{if} \PY{n}{clear} \PY{o}{==} \PY{k+kc}{True}\PY{p}{:}
+      \PY{n}{clear\PYZus{}output}\PY{p}{(}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Episode }\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{episode}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ Playback:}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+    \PY{n}{show\PYZus{}video}\PY{p}{(}\PY{p}{)}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Q\PYZhy{}Table}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{q\PYZus{}table}\PY{p}{)}
+    \PY{n}{env} \PY{o}{=} \PY{n}{gym}\PY{o}{.}\PY{n}{make}\PY{p}{(}\PY{n}{env\PYZus{}set}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{is\PYZus{}slippery}\PY{o}{=}\PY{n}{env\PYZus{}set}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PYZbs{}
+                        \PY{n}{map\PYZus{}name}\PY{o}{=}\PY{n}{env\PYZus{}set}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}
+
+  \PY{c+c1}{\PYZsh{}update exploration rate}
+  \PY{n}{exploration\PYZus{}rate} \PY{o}{=} \PY{n}{min\PYZus{}exploration\PYZus{}rate} \PY{o}{+} \PY{p}{(}\PY{n}{max\PYZus{}exploration\PYZus{}rate} \PYZbs{}
+    \PY{o}{\PYZhy{}} \PY{n}{min\PYZus{}exploration\PYZus{}rate}\PY{p}{)} \PY{o}{*} \PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{exploration\PYZus{}decay\PYZus{}rate}\PY{o}{*}\PY{n}{episode}\PY{p}{)}
+  \PY{n}{rewards\PYZus{}all\PYZus{}episodes}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{rewards\PYZus{}current\PYZus{}episode}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{}SUMMARY OUTPUT}
+\PY{n}{rewards\PYZus{}per\PYZus{}thousand\PYZus{}episodes} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PYZbs{}
+                            \PY{n}{rewards\PYZus{}all\PYZus{}episodes}\PY{p}{)}\PY{p}{,} \PY{n}{num\PYZus{}episodes}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}
+
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{ \PYZti{} Runtime statistics \PYZti{} }\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{Average reward per thousand episodes}\PY{l+s+se}{\PYZbs{}n}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\PY{n}{count} \PY{o}{=} \PY{l+m+mi}{1000}
+\PY{k}{for} \PY{n}{r} \PY{o+ow}{in} \PY{n}{rewards\PYZus{}per\PYZus{}thousand\PYZus{}episodes}\PY{p}{:}
+    \PY{n+nb}{print}\PY{p}{(}\PY{n}{count}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1000}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ \PYZhy{} }\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{count}\PY{p}{,} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{ : }\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n+nb}{str}\PY{p}{(}\PY{n+nb}{sum}\PY{p}{(}\PY{n}{r}\PY{o}{/}\PY{l+m+mi}{1000}\PY{p}{)}\PY{p}{)}\PY{p}{)}
+    \PY{n}{count} \PY{o}{+}\PY{o}{=} \PY{l+m+mi}{1000}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \emph{Aside: Plotting High-Res Figures (Chapter 6)}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{episodes\PYZus{}to\PYZus{}move\PYZus{}avg} \PY{o}{=} \PY{l+m+mi}{100}
+\PY{n}{data\PYZus{}split} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{split}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{rewards\PYZus{}all\PYZus{}episodes}\PY{p}{)}\PY{p}{,} \PYZbs{}
+                      \PY{n}{num\PYZus{}episodes}\PY{o}{/}\PY{n}{episodes\PYZus{}to\PYZus{}move\PYZus{}avg}\PY{p}{)}
+\PY{n}{avgs\PYZus{}y} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+\PY{n}{avgs\PYZus{}x} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+\PY{n}{j} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{k}{for} \PY{n}{i} \PY{o+ow}{in} \PY{n}{data\PYZus{}split}\PY{p}{:}
+    \PY{n}{avgs\PYZus{}y}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n+nb}{sum}\PY{p}{(}\PY{n}{i}\PY{o}{/}\PY{n}{episodes\PYZus{}to\PYZus{}move\PYZus{}avg}\PY{p}{)}\PY{p}{)}
+    \PY{n}{avgs\PYZus{}x}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{j}\PY{o}{*}\PY{n}{episodes\PYZus{}to\PYZus{}move\PYZus{}avg}\PY{p}{)}
+    \PY{n}{j} \PY{o}{+}\PY{o}{=} \PY{l+m+mi}{1}
+
+\PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{dpi}\PY{o}{=}\PY{l+m+mi}{900}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{clf}\PY{p}{(}\PY{p}{)}        
+\PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Episode}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Average Reward For Period}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{avgs\PYZus{}x}\PY{p}{,} \PY{n}{avgs\PYZus{}y}\PY{p}{)}
+\PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \textbf{Play Using Determined Q-Table}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{env} \PY{o}{=} \PY{n}{wrap\PYZus{}env}\PY{p}{(}\PY{n}{gym}\PY{o}{.}\PY{n}{make}\PY{p}{(}\PY{n}{env\PYZus{}set}\PY{p}{[}\PY{l+m+mi}{0}\PY{p}{]}\PY{p}{,} \PY{n}{is\PYZus{}slippery}\PY{o}{=}\PY{n}{env\PYZus{}set}\PY{p}{[}\PY{l+m+mi}{1}\PY{p}{]}\PY{p}{,} \PYZbs{}
+                        \PY{n}{map\PYZus{}name}\PY{o}{=}\PY{n}{env\PYZus{}set}\PY{p}{[}\PY{l+m+mi}{2}\PY{p}{]}\PY{p}{)}\PY{p}{)}
+\PY{n}{state} \PY{o}{=} \PY{n}{env}\PY{o}{.}\PY{n}{reset}\PY{p}{(}\PY{p}{)} \PY{c+c1}{\PYZsh{}start simulation}
+\PY{k}{while} \PY{k+kc}{True}\PY{p}{:}
+    \PY{n}{action} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{argmax}\PY{p}{(}\PY{n}{q\PYZus{}table}\PY{p}{[}\PY{n}{state}\PY{p}{,}\PY{p}{:}\PY{p}{]}\PY{p}{)}   
+    \PY{n}{state}\PY{p}{,} \PY{n}{reward}\PY{p}{,} \PY{n}{done}\PY{p}{,} \PY{n}{info} \PY{o}{=} \PY{n}{env}\PY{o}{.}\PY{n}{step}\PY{p}{(}\PY{n}{action}\PY{p}{)}   
+    \PY{k}{if} \PY{n}{done}\PY{p}{:} 
+        \PY{k}{break}\PY{p}{;}
+            
+\PY{n}{env}\PY{o}{.}\PY{n}{close}\PY{p}{(}\PY{p}{)}
+\PY{n}{show\PYZus{}video}\PY{p}{(}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \hypertarget{deep-q-learning}{%
+\section{\texorpdfstring{\text{Deep
+Q-Learning}}{Deep Q-Learning}}\label{deep-q-learning}}
+
+
+Solving the `Cart-Pole' problem (by OpenAI) \textbar{} Implementation of
+Algorithm 7.1 with video outputs.
+
+
+\begin{quote}
+\textbf{note:} runtime needs to be cleared and restarted if FrozenLake
+cells have been run previously - video wrapper tends to malfunction and
+display incorrect videos if environment type changes.
+\end{quote}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}obtains a rolling average of rewards to plot live during training}
+\PY{k}{def} \PY{n+nf}{get\PYZus{}moving\PYZus{}average}\PY{p}{(}\PY{n}{period}\PY{p}{,} \PY{n}{values}\PY{p}{)}\PY{p}{:}
+    \PY{n}{values} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{tensor}\PY{p}{(}\PY{n}{values}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{torch}\PY{o}{.}\PY{n}{float}\PY{p}{)}
+    \PY{k}{if} \PY{n+nb}{len}\PY{p}{(}\PY{n}{values}\PY{p}{)} \PY{o}{\PYZgt{}}\PY{o}{=} \PY{n}{period}\PY{p}{:}
+        \PY{n}{moving\PYZus{}avg} \PY{o}{=} \PY{n}{values}\PY{o}{.}\PY{n}{unfold}\PY{p}{(}\PY{n}{dimension}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{,} \PY{n}{size}\PY{o}{=}\PY{n}{period}\PY{p}{,} \PY{n}{step}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)} \PYZbs{}
+            \PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{n}{dim}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}\PY{o}{.}\PY{n}{flatten}\PY{p}{(}\PY{n}{start\PYZus{}dim}\PY{o}{=}\PY{l+m+mi}{0}\PY{p}{)}
+        \PY{n}{moving\PYZus{}avg} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{cat}\PY{p}{(}\PY{p}{(}\PY{n}{torch}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{period}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{)}\PY{p}{,} \PY{n}{moving\PYZus{}avg}\PY{p}{)}\PY{p}{)}
+        \PY{k}{return} \PY{n}{moving\PYZus{}avg}\PY{o}{.}\PY{n}{numpy}\PY{p}{(}\PY{p}{)}
+    \PY{k}{else}\PY{p}{:}
+        \PY{n}{moving\PYZus{}avg} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{values}\PY{p}{)}\PY{p}{)}
+        \PY{k}{return} \PY{n}{moving\PYZus{}avg}\PY{o}{.}\PY{n}{numpy}\PY{p}{(}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{}matplot setup for live rolling average stats}
+\PY{k}{def} \PY{n+nf}{plot}\PY{p}{(}\PY{n}{values}\PY{p}{,} \PY{n}{moving\PYZus{}avg\PYZus{}period}\PY{p}{,} \PY{n}{clear}\PY{p}{,} \PY{n}{dpi\PYZus{}in}\PY{p}{)}\PY{p}{:}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{figure}\PY{p}{(}\PY{l+m+mi}{2}\PY{p}{,} \PY{n}{dpi}\PY{o}{=}\PY{n}{dpi\PYZus{}in}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{clf}\PY{p}{(}\PY{p}{)}        
+    \PY{n}{plt}\PY{o}{.}\PY{n}{xlabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Episode}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{ylabel}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{Duration}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{values}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{plot}\PY{p}{(}\PY{n}{get\PYZus{}moving\PYZus{}average}\PY{p}{(}\PY{n}{moving\PYZus{}avg\PYZus{}period}\PY{p}{,} \PY{n}{values}\PY{p}{)}\PY{p}{)}
+    \PY{n}{plt}\PY{o}{.}\PY{n}{pause}\PY{p}{(}\PY{l+m+mf}{0.001}\PY{p}{)}
+    \PY{k}{if} \PY{n}{clear} \PY{o}{==} \PY{k+kc}{True}\PY{p}{:}
+        \PY{k}{if} \PY{n}{is\PYZus{}ipython}\PY{p}{:} \PY{n}{ipythondisplay}\PY{o}{.}\PY{n}{clear\PYZus{}output}\PY{p}{(}\PY{n}{wait}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}converts input into tensor}
+\PY{k}{def} \PY{n+nf}{to\PYZus{}tensor}\PY{p}{(}\PY{n}{arr}\PY{p}{,} \PY{n}{dtype}\PY{o}{=}\PY{n}{torch}\PY{o}{.}\PY{n}{float}\PY{p}{,} \PY{n}{reshape}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}\PY{p}{:}
+    \PY{n}{output} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{from\PYZus{}numpy}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{array}\PY{p}{(}\PY{n}{arr}\PY{p}{)}\PY{p}{)}\PY{o}{.}\PY{n}{type}\PY{p}{(}\PY{n}{dtype}\PY{p}{)}
+    \PY{k}{if} \PY{n}{reshape}\PY{p}{:}
+        \PY{n}{output} \PY{o}{=} \PY{n}{output}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}
+
+    \PY{k}{return} \PY{n}{output}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{class} \PY{n+nc}{DQN}\PY{p}{(}\PY{n}{nn}\PY{o}{.}\PY{n}{Module}\PY{p}{)}\PY{p}{:}
+    \PY{k}{def} \PY{n+nf+fm}{\PYZus{}\PYZus{}init\PYZus{}\PYZus{}}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{env}\PY{p}{,} \PY{n}{layer\PYZus{}size}\PY{p}{)}\PY{p}{:}
+        \PY{n+nb}{super}\PY{p}{(}\PY{n}{DQN}\PY{p}{,} \PY{n+nb+bp}{self}\PY{p}{)}\PY{o}{.}\PY{n+nf+fm}{\PYZus{}\PYZus{}init\PYZus{}\PYZus{}}\PY{p}{(}\PY{p}{)}
+        \PY{n}{in\PYZus{}features} \PY{o}{=} \PY{n+nb}{int}\PY{p}{(}\PY{n}{np}\PY{o}{.}\PY{n}{prod}\PY{p}{(}\PY{n}{env}\PY{o}{.}\PY{n}{observation\PYZus{}space}\PY{o}{.}\PY{n}{shape}\PY{p}{)}\PY{p}{)}
+
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{net} \PY{o}{=} \PY{n}{nn}\PY{o}{.}\PY{n}{Sequential}\PY{p}{(}
+            \PY{n}{nn}\PY{o}{.}\PY{n}{Linear}\PY{p}{(}\PY{n}{in\PYZus{}features}\PY{p}{,} \PY{n}{layer\PYZus{}size}\PY{p}{)}\PY{p}{,}
+            \PY{n}{nn}\PY{o}{.}\PY{n}{ReLU}\PY{p}{(}\PY{p}{)}\PY{p}{,}
+            \PY{n}{nn}\PY{o}{.}\PY{n}{Linear}\PY{p}{(}\PY{n}{layer\PYZus{}size}\PY{p}{,} \PY{n}{layer\PYZus{}size}\PY{p}{)}\PY{p}{,}
+            \PY{n}{nn}\PY{o}{.}\PY{n}{ReLU}\PY{p}{(}\PY{p}{)}\PY{p}{,}
+            \PY{n}{nn}\PY{o}{.}\PY{n}{Linear}\PY{p}{(}\PY{n}{layer\PYZus{}size}\PY{p}{,} \PY{n}{env}\PY{o}{.}\PY{n}{action\PYZus{}space}\PY{o}{.}\PY{n}{n}\PY{p}{)}\PY{p}{,}
+        \PY{p}{)}
+
+    \PY{k}{def} \PY{n+nf}{forward}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{observation}\PY{p}{)}\PY{p}{:}
+        \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{net}\PY{p}{(}\PY{n}{observation}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{class} \PY{n+nc}{Memory}\PY{p}{(}\PY{n+nb}{object}\PY{p}{)}\PY{p}{:}
+    \PY{k}{def} \PY{n+nf+fm}{\PYZus{}\PYZus{}init\PYZus{}\PYZus{}}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{maxlen}\PY{p}{)}\PY{p}{:}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{memory} \PY{o}{=} \PY{n}{deque}\PY{p}{(}\PY{n}{maxlen}\PY{o}{=}\PY{n}{maxlen}\PY{p}{)}
+    \PY{k}{def} \PY{n+nf}{store}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{experience}\PY{p}{)}\PY{p}{:}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{memory}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{experience}\PY{p}{)}
+    \PY{k}{def} \PY{n+nf}{sample}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{n\PYZus{}samples}\PY{p}{)}\PY{p}{:}
+        \PY{k}{return} \PY{n+nb}{zip}\PY{p}{(}\PY{o}{*}\PY{n}{random}\PY{o}{.}\PY{n}{sample}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{memory}\PY{p}{,} \PY{n}{n\PYZus{}samples}\PY{p}{)}\PY{p}{)}
+    \PY{k}{def} \PY{n+nf+fm}{\PYZus{}\PYZus{}len\PYZus{}\PYZus{}}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{)}\PY{p}{:}
+        \PY{k}{return} \PY{n+nb}{len}\PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{memory}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{k}{class} \PY{n+nc}{EpsilonGreedyStrategy}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+    \PY{k}{def} \PY{n+nf+fm}{\PYZus{}\PYZus{}init\PYZus{}\PYZus{}}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{start}\PY{p}{,} \PY{n}{end}\PY{p}{,} \PY{n}{decay}\PY{p}{)}\PY{p}{:}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{start} \PY{o}{=} \PY{n}{start}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{end} \PY{o}{=} \PY{n}{end}
+        \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{decay} \PY{o}{=} \PY{n}{decay}
+    \PY{k}{def} \PY{n+nf}{get\PYZus{}exploration\PYZus{}rate}\PY{p}{(}\PY{n+nb+bp}{self}\PY{p}{,} \PY{n}{episode}\PY{p}{)}\PY{p}{:}
+        \PY{k}{return} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{end} \PY{o}{+} \PY{p}{(}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{start} \PY{o}{\PYZhy{}} \PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{end}\PY{p}{)}\PY{o}{*}\PY{n}{np}\PY{o}{.}\PY{n}{exp}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{n}{episode}\PY{o}{*}\PY{n+nb+bp}{self}\PY{o}{.}\PY{n}{decay}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \textbf{Training Algorithm} \textbar{} Solves `CartPole-v1'
+
+\begin{quote}
+\emph{potential epilepsy warning for Google Colab}
+\end{quote}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{c+c1}{\PYZsh{}Hyper Parameters}
+\PY{n}{memory\PYZus{}capacity} \PY{o}{=} \PY{l+m+mi}{10000}
+\PY{n}{learning\PYZus{}rate} \PY{o}{=} \PY{l+m+mf}{.0001}
+\PY{n}{discount\PYZus{}factor} \PY{o}{=} \PY{l+m+mf}{0.99}
+\PY{n}{EPSILON\PYZus{}START} \PY{o}{=} \PY{l+m+mf}{1.0}
+\PY{n}{EPSILON\PYZus{}END} \PY{o}{=} \PY{l+m+mf}{0.001}
+\PY{n}{EPSILON\PYZus{}DECAY} \PY{o}{=} \PY{l+m+mf}{0.0001}
+\PY{n}{NUM\PYZus{}EPISODES} \PY{o}{=} \PY{l+m+mi}{300}
+\PY{n}{replay\PYZus{}memory\PYZus{}minimum} \PY{o}{=} \PY{l+m+mi}{500}
+\PY{n}{MOVING\PYZus{}AVERAGE\PYZus{}INT} \PY{o}{=} \PY{l+m+mi}{25}  \PY{c+c1}{\PYZsh{}Episodes to consider in rolling average}
+
+\PY{n}{env} \PY{o}{=} \PY{n}{gym}\PY{o}{.}\PY{n}{make}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{CartPole\PYZhy{}v1}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+
+\PY{n}{model} \PY{o}{=} \PY{n}{DQN}\PY{p}{(}\PY{n}{env}\PY{p}{,} \PY{l+m+mi}{128}\PY{p}{)}
+\PY{n}{strategy} \PY{o}{=} \PY{n}{EpsilonGreedyStrategy}\PY{p}{(}\PY{n}{EPSILON\PYZus{}START}\PY{p}{,} \PY{n}{EPSILON\PYZus{}END}\PY{p}{,} \PY{n}{EPSILON\PYZus{}DECAY}\PY{p}{)}
+
+\PY{c+c1}{\PYZsh{} Optimizer and loss function initialisation}
+\PY{n}{optimizer} \PY{o}{=} \PY{n}{optim}\PY{o}{.}\PY{n}{Adam}\PY{p}{(}\PY{n}{model}\PY{o}{.}\PY{n}{parameters}\PY{p}{(}\PY{p}{)}\PY{p}{,} \PY{n}{lr}\PY{o}{=}\PY{n}{learning\PYZus{}rate}\PY{p}{)}
+\PY{n}{loss\PYZus{}fn} \PY{o}{=} \PY{n}{nn}\PY{o}{.}\PY{n}{MSELoss}\PY{p}{(}\PY{p}{)}
+\PY{n}{memory} \PY{o}{=} \PY{n}{Memory}\PY{p}{(}\PY{n}{memory\PYZus{}capacity}\PY{p}{)}
+\PY{n}{episode\PYZus{}durations} \PY{o}{=} \PY{p}{[}\PY{p}{]}
+
+\PY{n}{observation} \PY{o}{=} \PY{n}{env}\PY{o}{.}\PY{n}{reset}\PY{p}{(}\PY{p}{)}
+\PY{n}{episode\PYZus{}reward} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{episode} \PY{o}{=} \PY{l+m+mi}{0}
+
+\PY{c+c1}{\PYZsh{}INITIALISING REPLAY MEMORY}
+\PY{k}{for} \PY{n}{step} \PY{o+ow}{in} \PY{n+nb}{range}\PY{p}{(}\PY{n}{replay\PYZus{}memory\PYZus{}minimum}\PY{p}{)}\PY{p}{:}
+    \PY{n}{action} \PY{o}{=} \PY{n}{env}\PY{o}{.}\PY{n}{action\PYZus{}space}\PY{o}{.}\PY{n}{sample}\PY{p}{(}\PY{p}{)}
+    \PY{n}{new\PYZus{}state}\PY{p}{,} \PY{n}{reward}\PY{p}{,} \PY{n}{done}\PY{p}{,} \PY{n}{info} \PY{o}{=} \PY{n}{env}\PY{o}{.}\PY{n}{step}\PY{p}{(}\PY{n}{action}\PY{p}{)}
+    \PY{n}{episode\PYZus{}reward} \PY{o}{+}\PY{o}{=} \PY{n}{reward}
+    \PY{k}{if} \PY{n}{done}\PY{p}{:}
+        \PY{n}{new\PYZus{}state} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{env}\PY{o}{.}\PY{n}{observation\PYZus{}space}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+    \PY{n}{memory}\PY{o}{.}\PY{n}{store}\PY{p}{(}\PY{p}{[}\PY{n}{observation}\PY{p}{,} \PY{n}{action}\PY{p}{,} \PY{n}{reward}\PY{p}{,} \PY{n+nb}{int}\PY{p}{(}\PY{n}{done}\PY{p}{)}\PY{p}{,} \PY{n}{new\PYZus{}state}\PY{p}{]}\PY{p}{)}
+    \PY{n}{done} \PY{o}{=} \PY{n}{done}
+    \PY{k}{if} \PY{n}{done}\PY{p}{:}
+        \PY{n}{observation} \PY{o}{=} \PY{n}{env}\PY{o}{.}\PY{n}{reset}\PY{p}{(}\PY{p}{)}
+    \PY{k}{else}\PY{p}{:} 
+        \PY{n}{observation} \PY{o}{=} \PY{n}{new\PYZus{}state}    
+
+\PY{c+c1}{\PYZsh{}MAIN TRAINING LOOP}
+\PY{n}{observation} \PY{o}{=} \PY{n}{env}\PY{o}{.}\PY{n}{reset}\PY{p}{(}\PY{p}{)}
+\PY{n}{episode\PYZus{}reward} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{episode} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{n}{step} \PY{o}{=} \PY{l+m+mi}{0}    
+\PY{k}{for} \PY{n}{step} \PY{o+ow}{in} \PY{n}{count}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+    \PY{k}{if} \PY{n}{np}\PY{o}{.}\PY{n}{random}\PY{o}{.}\PY{n}{random}\PY{p}{(}\PY{p}{)} \PY{o}{\PYZlt{}}\PY{o}{=} \PY{n}{strategy}\PY{o}{.}\PY{n}{get\PYZus{}exploration\PYZus{}rate}\PY{p}{(}\PY{n}{step}\PY{p}{)}\PY{p}{:}
+        \PY{n}{action} \PY{o}{=} \PY{n}{env}\PY{o}{.}\PY{n}{action\PYZus{}space}\PY{o}{.}\PY{n}{sample}\PY{p}{(}\PY{p}{)}
+    \PY{k}{else}\PY{p}{:}
+        \PY{n}{state} \PY{o}{=} \PY{n}{to\PYZus{}tensor}\PY{p}{(}\PY{n}{observation}\PY{p}{)}\PY{o}{.}\PY{n}{unsqueeze}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{)}
+        \PY{n}{action}  \PY{o}{=} \PY{n}{model}\PY{p}{(}\PY{n}{state}\PY{p}{)}\PY{o}{.}\PY{n}{argmax}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{item}\PY{p}{(}\PY{p}{)}
+
+    \PY{c+c1}{\PYZsh{} Take action and store in replay memory}
+    \PY{n}{new\PYZus{}state}\PY{p}{,} \PY{n}{reward}\PY{p}{,} \PY{n}{done}\PY{p}{,} \PY{n}{info} \PY{o}{=} \PY{n}{env}\PY{o}{.}\PY{n}{step}\PY{p}{(}\PY{n}{action}\PY{p}{)}
+    \PY{n}{episode\PYZus{}reward} \PY{o}{+}\PY{o}{=} \PY{n}{reward}
+    \PY{k}{if} \PY{n}{done}\PY{p}{:}
+        \PY{n}{new\PYZus{}state} \PY{o}{=} \PY{n}{np}\PY{o}{.}\PY{n}{zeros}\PY{p}{(}\PY{n}{env}\PY{o}{.}\PY{n}{observation\PYZus{}space}\PY{o}{.}\PY{n}{shape}\PY{p}{)}
+        \PY{n}{episode\PYZus{}durations}\PY{o}{.}\PY{n}{append}\PY{p}{(}\PY{n}{episode\PYZus{}reward}\PY{p}{)}
+    \PY{n}{memory}\PY{o}{.}\PY{n}{store}\PY{p}{(}\PY{p}{[}\PY{n}{observation}\PY{p}{,} \PY{n}{action}\PY{p}{,} \PY{n}{reward}\PY{p}{,} \PY{n+nb}{int}\PY{p}{(}\PY{n}{done}\PY{p}{)}\PY{p}{,} \PY{n}{new\PYZus{}state}\PY{p}{]}\PY{p}{)}
+    \PY{n}{done} \PY{o}{=} \PY{n}{done}
+    \PY{n}{observation} \PY{o}{=} \PY{n}{new\PYZus{}state}
+
+    \PY{k}{if} \PY{n}{done}\PY{p}{:}
+        \PY{n}{plot}\PY{p}{(}\PY{n}{episode\PYZus{}durations}\PY{p}{,} \PY{n}{MOVING\PYZus{}AVERAGE\PYZus{}INT}\PY{p}{,} \PY{k+kc}{True}\PY{p}{,} \PY{l+m+mi}{100}\PY{p}{)}
+        \PY{n}{obs} \PY{o}{=} \PY{n}{env}\PY{o}{.}\PY{n}{reset}\PY{p}{(}\PY{p}{)}
+        \PY{n}{episode\PYZus{}reward} \PY{o}{=} \PY{l+m+mi}{0}
+        \PY{n}{episode} \PY{o}{+}\PY{o}{=} \PY{l+m+mi}{1}
+
+    \PY{c+c1}{\PYZsh{} Main Training Loop once replay memory is minimum capacity}
+    \PY{n}{model}\PY{o}{.}\PY{n}{train}\PY{p}{(}\PY{p}{)} \PY{c+c1}{\PYZsh{}training mode \PYZhy{} affects how weights are calculated}
+                  \PY{c+c1}{\PYZsh{}greatly improves the algorithms overall performance }
+                  \PY{c+c1}{\PYZsh{}during training.}
+    \PY{n}{states}\PY{p}{,} \PY{n}{actions}\PY{p}{,} \PY{n}{rewards}\PY{p}{,} \PY{n}{dones}\PY{p}{,} \PY{n}{new\PYZus{}states} \PY{o}{=} \PY{n}{memory}\PY{o}{.}\PY{n}{sample}\PY{p}{(}\PY{l+m+mi}{128}\PY{p}{)}
+
+    \PY{c+c1}{\PYZsh{} Wrap all values}
+    \PY{n}{states} \PY{o}{=} \PY{n}{to\PYZus{}tensor}\PY{p}{(}\PY{n}{states}\PY{p}{)}
+    \PY{n}{actions} \PY{o}{=} \PY{n}{to\PYZus{}tensor}\PY{p}{(}\PY{n}{actions}\PY{p}{,} \PY{n}{torch}\PY{o}{.}\PY{n}{int64}\PY{p}{,} \PY{n}{reshape}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+    \PY{n}{new\PYZus{}states} \PY{o}{=} \PY{n}{to\PYZus{}tensor}\PY{p}{(}\PY{n}{new\PYZus{}states}\PY{p}{)}
+    \PY{n}{rewards} \PY{o}{=} \PY{n}{to\PYZus{}tensor}\PY{p}{(}\PY{n}{rewards}\PY{p}{,} \PY{n}{reshape}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+    \PY{n}{dones} \PY{o}{=} \PY{n}{to\PYZus{}tensor}\PY{p}{(}\PY{n}{dones}\PY{p}{,} \PY{n}{reshape}\PY{o}{=}\PY{k+kc}{True}\PY{p}{)}
+
+    \PY{c+c1}{\PYZsh{} Get current q\PYZhy{}values}
+    \PY{n}{qs} \PY{o}{=} \PY{n}{model}\PY{p}{(}\PY{n}{states}\PY{p}{)}
+    \PY{n}{qs} \PY{o}{=} \PY{n}{torch}\PY{o}{.}\PY{n}{gather}\PY{p}{(}\PY{n}{qs}\PY{p}{,} \PY{n}{dim}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{,} \PY{n}{index}\PY{o}{=}\PY{n}{actions}\PY{p}{)}
+
+    \PY{c+c1}{\PYZsh{} Compute target q\PYZhy{}values}
+    \PY{k}{with} \PY{n}{torch}\PY{o}{.}\PY{n}{no\PYZus{}grad}\PY{p}{(}\PY{p}{)}\PY{p}{:}
+        \PY{n}{predicted\PYZus{}qs}\PY{p}{,} \PY{n}{\PYZus{}} \PY{o}{=} \PY{n}{model}\PY{p}{(}\PY{n}{new\PYZus{}states}\PY{p}{)}\PY{o}{.}\PY{n}{max}\PY{p}{(}\PY{n}{dim}\PY{o}{=}\PY{l+m+mi}{1}\PY{p}{)}
+        \PY{n}{predicted\PYZus{}qs} \PY{o}{=} \PY{n}{predicted\PYZus{}qs}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)}
+    
+    \PY{c+c1}{\PYZsh{}Form of the piecewise function shown in the DeepMind 2015 paper}
+    \PY{n}{target\PYZus{}qs} \PY{o}{=} \PY{n}{rewards} \PY{o}{+} \PY{n}{discount\PYZus{}factor} \PY{o}{*} \PY{p}{(}\PY{l+m+mi}{1} \PY{o}{\PYZhy{}} \PY{n}{dones}\PY{p}{)} \PY{o}{*} \PYZbs{}
+                                        \PY{n}{predicted\PYZus{}qs}\PY{o}{.}\PY{n}{reshape}\PY{p}{(}\PY{o}{\PYZhy{}}\PY{l+m+mi}{1}\PY{p}{,} \PY{l+m+mi}{1}\PY{p}{)} 
+    
+    \PY{c+c1}{\PYZsh{} Compute loss}
+    \PY{n}{loss} \PY{o}{=} \PY{n}{loss\PYZus{}fn}\PY{p}{(}\PY{n}{qs}\PY{p}{,} \PY{n}{target\PYZus{}qs}\PY{p}{)}
+    \PY{n}{optimizer}\PY{o}{.}\PY{n}{zero\PYZus{}grad}\PY{p}{(}\PY{p}{)}
+    \PY{n}{loss}\PY{o}{.}\PY{n}{backward}\PY{p}{(}\PY{p}{)}   
+    \PY{n}{optimizer}\PY{o}{.}\PY{n}{step}\PY{p}{(}\PY{p}{)}  \PY{c+c1}{\PYZsh{}Backpropagation}
+
+    \PY{c+c1}{\PYZsh{}break loop and run model}
+    \PY{k}{if} \PY{n}{episode} \PY{o}{==} \PY{n}{NUM\PYZus{}EPISODES}\PY{p}{:}
+        \PY{n}{env}\PY{o}{.}\PY{n}{close}\PY{p}{(}\PY{p}{)}
+        \PY{n}{wrap\PYZus{}env}\PY{p}{(}\PY{n}{env}\PY{p}{)}
+        \PY{n}{done} \PY{o}{=} \PY{k+kc}{False}   
+        \PY{k}{while} \PY{n}{done} \PY{o}{==} \PY{k+kc}{False}\PY{p}{:}
+            \PY{n}{state} \PY{o}{=} \PY{n}{to\PYZus{}tensor}\PY{p}{(}\PY{n}{obs}\PY{p}{)}\PY{o}{.}\PY{n}{unsqueeze}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{)}
+            \PY{n}{action} \PY{o}{=} \PY{n}{model}\PY{p}{(}\PY{n}{state}\PY{p}{)}\PY{o}{.}\PY{n}{argmax}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{item}\PY{p}{(}\PY{p}{)}
+            \PY{n}{obs}\PY{p}{,} \PY{n}{reward}\PY{p}{,} \PY{n}{done}\PY{p}{,} \PY{n}{info} \PY{o}{=} \PY{n}{env}\PY{o}{.}\PY{n}{step}\PY{p}{(}\PY{n}{action}\PY{p}{)}
+        \PY{n}{env}\PY{o}{.}\PY{n}{close}\PY{p}{(}\PY{p}{)}
+        \PY{n}{plot}\PY{p}{(}\PY{n}{episode\PYZus{}durations}\PY{p}{,} \PY{n}{MOVING\PYZus{}AVERAGE\PYZus{}INT}\PY{p}{,} \PY{k+kc}{False}\PY{p}{,} \PY{l+m+mi}{100}\PY{p}{)}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Final Run:}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+        \PY{n}{show\PYZus{}video}\PY{p}{(}\PY{p}{)}
+        \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{See Cell below to run more.}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+        \PY{k}{break}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \textbf{Play Using Trained Model}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{env} \PY{o}{=} \PY{n}{wrap\PYZus{}env}\PY{p}{(}\PY{n}{gym}\PY{o}{.}\PY{n}{make}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{CartPole\PYZhy{}v1}\PY{l+s+s1}{\PYZsq{}}\PY{p}{)}\PY{p}{)}
+\PY{n}{obs} \PY{o}{=} \PY{n}{env}\PY{o}{.}\PY{n}{reset}\PY{p}{(}\PY{p}{)}
+\PY{n}{done} \PY{o}{=} \PY{k+kc}{False}
+\PY{n}{total\PYZus{}reward} \PY{o}{=} \PY{l+m+mi}{0}
+\PY{k}{while} \PY{n}{done} \PY{o}{==} \PY{k+kc}{False}\PY{p}{:}
+    \PY{n}{state} \PY{o}{=} \PY{n}{to\PYZus{}tensor}\PY{p}{(}\PY{n}{obs}\PY{p}{)}\PY{o}{.}\PY{n}{unsqueeze}\PY{p}{(}\PY{l+m+mi}{0}\PY{p}{)}
+    \PY{n}{action} \PY{o}{=} \PY{n}{model}\PY{p}{(}\PY{n}{state}\PY{p}{)}\PY{o}{.}\PY{n}{argmax}\PY{p}{(}\PY{p}{)}\PY{o}{.}\PY{n}{item}\PY{p}{(}\PY{p}{)}
+    \PY{n}{obs}\PY{p}{,} \PY{n}{reward}\PY{p}{,} \PY{n}{done}\PY{p}{,} \PY{n}{info} \PY{o}{=} \PY{n}{env}\PY{o}{.}\PY{n}{step}\PY{p}{(}\PY{n}{action}\PY{p}{)}
+    \PY{n}{total\PYZus{}reward} \PY{o}{+}\PY{o}{=} \PY{n}{reward}
+\PY{n}{env}\PY{o}{.}\PY{n}{close}\PY{p}{(}\PY{p}{)}
+\PY{n}{show\PYZus{}video}\PY{p}{(}\PY{p}{)}
+\PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Total Reward/Runtime = }\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{total\PYZus{}reward}\PY{p}{)}
+\PY{k}{if} \PY{n}{total\PYZus{}reward} \PY{o}{\PYZgt{}}\PY{o}{=} \PY{l+m+mi}{500}\PY{p}{:}
+    \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Optimal Solution for CartPole\PYZhy{}v1!}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
+
+    \emph{Aside: Plotting High-Res Figures (Chapter 7)}
+
+    \begin{tcolorbox}[breakable, size=fbox, boxrule=1pt, pad at break*=1mm,colback=cellbackground, colframe=cellborder]
+\prompt{In}{incolor}{ }{\boxspacing}
+\begin{Verbatim}[commandchars=\\\{\}]
+\PY{n}{plot}\PY{p}{(}\PY{n}{episode\PYZus{}durations}\PY{p}{,} \PY{l+m+mi}{50}\PY{p}{,} \PY{k+kc}{False}\PY{p}{,} \PY{l+m+mi}{900}\PY{p}{)}
+\end{Verbatim}
+\end{tcolorbox}
